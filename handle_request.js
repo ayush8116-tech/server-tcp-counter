@@ -64,6 +64,7 @@ export const handleRequest = (request) => {
 
   const handlerMapper = {
     "/": () => resetHandler(),
+    "/counter/zero": () => incrementHandler(0),
     "/counter/one": () => incrementHandler(1),
     "/counter/two": () => incrementHandler(2),
     "/counter/three": () => incrementHandler(3),
