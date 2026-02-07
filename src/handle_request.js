@@ -5,7 +5,7 @@ const readFromJson = (path) => Deno.readTextFileSync(path);
 const writeToJson = (path, content) => Deno.writeTextFileSync(path, content);
 
 const getDeliveries = () => {
-  const data = readFromJson("./counter.json");
+  const data = readFromJson("./data/score_data.json");
   return JSON.parse(data);
 };
 
@@ -13,7 +13,7 @@ const write = (delivery) => {
   const deliveries = getDeliveries();
   deliveries.push(delivery);
 
-  writeToJson("./counter.json", JSON.stringify(deliveries));
+  writeToJson("./data/score_data.json", JSON.stringify(deliveries));
 };
 
 const createResponse = (content, status) => {
@@ -30,9 +30,9 @@ const undoHandler = () => {
   if (deliveries.length > 1) {
     deliveries.pop();
   }
-  
+
   const currentDelivery = deliveries[deliveries.length - 1];
-  writeToJson("./counter.json", JSON.stringify(deliveries));
+  writeToJson("./data/score_data.json", JSON.stringify(deliveries));
   const body = getHtmlTemplate(currentDelivery);
 
   return createResponse(body, 201);
@@ -53,7 +53,7 @@ const incrementHandler = (delta) => {
 const resetHandler = () => {
   const delivery = { over: 0, score: 0, total: 0 };
   const deliveries = [delivery];
-  writeToJson("./counter.json", JSON.stringify(deliveries));
+  writeToJson("./data/score_data.json", JSON.stringify(deliveries));
   const body = getHtmlTemplate(delivery);
   return createResponse(body, 200);
 };

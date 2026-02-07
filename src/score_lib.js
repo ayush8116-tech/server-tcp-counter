@@ -1,22 +1,22 @@
 const startOver = (overCount, inning) => {
-  return inning.push({over : overCount, deliveries : []})
+  return inning.push({ over: overCount, deliveries: [] });
 };
 
 const startInning = (innings, inningNumber) => {
-  const inning = []
-  innings[inningNumber] = inning
-  return inning
-}
+  const inning = [];
+  innings[inningNumber] = inning;
+  return inning;
+};
 
 const startMatch = () => {
-  return {over : 0,total : 0, target : 0};
-}
+  return { over: 0, total: 0, target: 0 };
+};
 
 const processMatch = () => {
   const innings = startMatch();
   const inning = startInning(innings, 0);
   const over = startOver(0, inning);
-  return innings
+  return innings;
 };
 
 const updateOverCount = (overCount, ballCount) => {
@@ -43,7 +43,7 @@ const updateBalls = (over) => {
 
 export const generateDelivery = (delivery) => {
   return {
-    over : updateBalls(delivery.over),
+    over: updateBalls(delivery.over),
     score: delivery.score,
     total: delivery.total + delivery.score,
   };
