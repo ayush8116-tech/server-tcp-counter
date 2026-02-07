@@ -1,16 +1,19 @@
 ```js
-innings : {
-  0 : [
+innings : 
+{
+  "0": [
     {
-      0 : [{
-        batter: 0,
-        extra : 0,
-        runs : 0,
-        total : 0
-      }];
-      }
-    ]
+      "over": 0,
+      "deliveries": []
     }
+  ],
+  "summary": {
+    "over": 0,
+    "total": 0,
+    "inning": 0,
+    "target": 0
+  }
+}
 ```
 
 request will come from browser

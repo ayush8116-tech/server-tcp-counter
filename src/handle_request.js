@@ -1,4 +1,8 @@
-import { generateDelivery } from "./score_lib.js";
+import {
+  generateDelivery,
+  processDeliveries,
+  startMatch,
+} from "./score_lib.js";
 import { getHtmlTemplate } from "./html_template.js";
 
 const readFromJson = (path) => Deno.readTextFileSync(path);
@@ -39,22 +43,17 @@ const undoHandler = () => {
 };
 
 const incrementHandler = (delta) => {
-  const deliveries = getDeliveries();
-  const delivery = deliveries[deliveries.length - 1];
-  console.log({ deliveries });
+  const matchDetail = processDeliveries(delta);
 
-  delivery.score = delta;
-  const newDelivery = generateDelivery(delivery);
-  write(newDelivery);
-  const body = getHtmlTemplate(newDelivery);
+  // const newDelivery = generateDelivery(delivery);
+  // write(newDelivery);
+  const body = getHtmlTemplate(matchDetail);
   return createResponse(body, 201);
 };
 
 const resetHandler = () => {
-  const delivery = { over: 0, score: 0, total: 0 };
-  const deliveries = [delivery];
-  writeToJson("./data/score_data.json", JSON.stringify(deliveries));
-  const body = getHtmlTemplate(delivery);
+  const { summary } = startMatch();
+  const body = getHtmlTemplate(summary);
   return createResponse(body, 200);
 };
 
@@ -71,7 +70,7 @@ export const handleRequest = (request) => {
     "/counter/four": () => incrementHandler(4),
     "/counter/five": () => incrementHandler(5),
     "/counter/six": () => incrementHandler(6),
-    "/counter/undo": () => undoHandler(),
+    // "/counter/undo": () => undoHandler(),
   };
 
   const handler = handlerMapper[pathname];
