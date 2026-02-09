@@ -29,8 +29,8 @@ const createResponseBody = (match) => {
   return updatedPageWithTarget;
 };
 
-const scoreHandler = (runs) => {
-  const matchDetail = processDeliveries(runs);
+const scoreHandler = (runs, isExtra) => {
+  const matchDetail = processDeliveries(runs, isExtra);
 
   const body = createResponseBody(matchDetail);
   return createResponse(body, 201);
@@ -48,6 +48,8 @@ export const handleRequest = (request) => {
 
   const handlerMapper = {
     "/": () => resetHandler(),
+    "/counter/wide": () => scoreHandler(1, true),
+    "/counter/noBall": () => scoreHandler(1, true),
     "/counter/zero": () => scoreHandler(0),
     "/counter/one": () => scoreHandler(1),
     "/counter/two": () => scoreHandler(2),

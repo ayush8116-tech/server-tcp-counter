@@ -22,7 +22,6 @@ const updateBalls = (over) => {
 
 const startOver = (overCount, innings) => {
   const inningCount = innings.summary.inning;
-  console.log({ inningCount });
 
   innings[inningCount].push({ over: overCount, deliveries: [] });
 };
@@ -31,6 +30,7 @@ const startInning = (innings, inningNumber) => {
   const matchData = { ...innings };
   const inning = [];
   matchData[inningNumber] = inning;
+
   return matchData;
 };
 
@@ -58,6 +58,7 @@ export const startMatch = () => {
     over: 0,
     total: 0,
     inning: 1,
+    extras : 0,
     target: 0,
     team1Score: 0,
     team2Score: 0,
@@ -82,34 +83,39 @@ const endMatch = (match) => {
 };
 
 const hasOverFinished = (over) => over > 0 && over === Math.floor(over);
-const hasInningFinished = (over) => over === 2;
+const hasInningFinished = ({ over, inning }) => over === 2 && inning === 1;
 const hasMatchFinished = (match) =>
   match.inning === 2 &&
   match.total >= match.target;
 
-const addData = (delivery, matchData) => {
+const addData = (delivery, matchData, isExtra) => {
   const { inning, over } = matchData.summary;
 
   matchData[inning][Math.floor(over)].deliveries.push(delivery);
-  matchData.summary.total += delivery.run;
-  const overCount = updateBalls(over);
+  matchData.summary.total += isExtra ? delivery.extraRun : delivery.batterRun;
+  const overCount = isExtra ? over : updateBalls(over);
   matchData.summary["over"] = overCount;
   matchData.summary["inning"] = inning;
 
   return matchData;
 };
 
-const addDelivery = (run, innings) => {
+const addDelivery = (run, innings, isExtra) => {
   let matchData = { ...innings };
 
   const { over } = matchData.summary;
-  const delivery = { run };
+  let delivery = { batterRun: run, extraRun: 0 };
+  if (isExtra) {
+    delivery = { batterRun: 0, extraRun: run };
+    matchData.summary.extras += run;
+  }
+
   if (hasMatchFinished(matchData.summary)) {
     const updatedMatchData = endMatch(matchData);
     return updatedMatchData;
   }
 
-  if (matchData.summary.inning === 1 && hasInningFinished(over)) {
+  if (hasInningFinished(matchData.summary)) {
     matchData = endInning(matchData);
   }
 
@@ -117,15 +123,16 @@ const addDelivery = (run, innings) => {
     startOver(over, matchData);
   }
 
-  const updatedData = addData(delivery, matchData);
+  const updatedData = addData(delivery, matchData, isExtra);
 
   return updatedData;
 };
 
-export const processDeliveries = (run) => {
+export const processDeliveries = (run, isExtra) => {
   const matchData = readFromJson("./data/match.json");
-  const updatedData = addDelivery(run, matchData);
+  const updatedData = addDelivery(run, matchData, isExtra);
   writeToJson("./data/match.json", updatedData);
+
   return updatedData.summary;
 };
 
