@@ -19,9 +19,11 @@ const createResponseBody = (match) => {
   );
   const updatedPageWithInning = updatedPageWithOver.replace(
     "${inning}",
-    match.inning + 1,
+    match.inning,
   );
-  return updatedPageWithInning;
+  const updatedPageWithTarget = updatedPageWithInning.replace("${target}", match.target)
+
+  return updatedPageWithTarget;
 };
 
 const scoreHandler = (runs) => {
