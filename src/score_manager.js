@@ -6,7 +6,7 @@ const readFromJson = (path) => {
   return JSON.parse(data);
 };
 
-const updateOverCount = (overCount, ballCount) => {
+const updateOverCount = (overCount, ballCount) => { // update over by doing mod %
   if (ballCount === undefined) {
     return { overCount, ballCount: 1 };
   }
@@ -28,17 +28,25 @@ const updateBalls = (over) => {
   return summariseOverDetails(overDetails);
 };
 
-const startNewOver = (overCount, innings) => {
-  const inningCount = innings.summary.inning;
+const startNewOver = (overCount, match) => {
+  const inningCount = match.summary.inning - 1;
 
-  innings[inningCount].push({ over: overCount, deliveries: [] });
+  match.innings[inningCount].push({ over: overCount, deliveries: [] });
 };
 
-const startInning = (innings, inningNumber) => {
-  const matchData = { ...innings };
+const startInning = (match, inningNumber) => {
+  const matchData = { ...match };
   const inning = [];
-  matchData[inningNumber] = inning;
 
+  if (inningNumber === 1) {
+    matchData.innings = [];
+    matchData.innings.push(inning);
+    console.log({ matchData });
+    return matchData;
+  }
+
+  console.log({ matchData });
+  matchData.innings.push(inning);
   return matchData;
 };
 
@@ -65,6 +73,9 @@ export const startMatch = () => {
     over: 0,
     total: 0,
     wicket: 0,
+    striker: "",
+    nonStriker: "",
+    bowler: "",
     inning: 1,
     extras: 0,
     target: 0,
@@ -93,8 +104,10 @@ const endMatch = (match) => {
 };
 
 const hasOverFinished = (over) => over > 0 && over === Math.floor(over);
+
 const hasInningFinished = ({ over, inning, wicket }) =>
   (over === 2 && inning === 1) || wicket >= 10;
+
 const hasMatchFinished = (match) =>
   match.inning === 2 &&
   match.total >= match.target;
@@ -102,7 +115,7 @@ const hasMatchFinished = (match) =>
 const addDelivery = (delivery, matchData, isExtra) => {
   const { inning, over } = matchData.summary;
 
-  matchData[inning][Math.floor(over)].deliveries.push(delivery);
+  matchData.innings[inning - 1][Math.floor(over)].deliveries.push(delivery);
   matchData.summary.total += isExtra ? delivery.extraRun : delivery.batterRun;
   matchData.summary.wicket += delivery.isWicket ? 1 : 0;
 

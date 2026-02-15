@@ -26,6 +26,7 @@ const createResponseBody = (match) => {
     "${inning}": match.inning,
     "${target}": match.target,
   };
+  
   let updatedPage = SCORER_PAGE_TEMPLATE;
 
   for (const data in dataToUpdate) {
